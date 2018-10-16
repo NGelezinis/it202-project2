@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.font="20px Helvetica";
+ctx.fillStyle = "red";
+var game = {lives:3,
+  score:0,
+  level:1};
+  var character = {x:240};
+  var harm = {x:150,
+             y:10,
+             speed:2}
+  var benefit = {x:350,
+             y:10,
+             speed:2}
+  var img = new Image();
+  var img2 = new Image();
+  var img3 = new Image();
+  var img4 = new Image();
+  
+  document.addEventListener('keydown', function(event) {
+      if (event.keyCode == 37){
+        character.x -= 10;
+        if (character.x < 0){
+            character.x = 0;
+        }
+      }
+      if (event.keyCode == 39){
+        character.x += 10;
+        if (character.x+20 > 500){
+            character.x = 480;
+        }
+      }
+  });
+function collisionHarm(){
+  game.lives -= 1;
+  if (game.lives == 0){
+    alert("Game Over");
+    exit();
+  }
+  harm.y = -30;
+  harm.x = Math.floor((Math.random() * 480)); 
+}
+function collisionBenefit(){
+  game.score += 10;
+  if (game.score%100 == 0){
+      game.level += 1;
+      harm.speed += 1;
+      benefit.speed += 1;
+  }
+  benefit.y = -30;
+  benefit.x = Math.floor((Math.random() * 480)); 
+}
+    
+function draw(){
+  img.src = "stars background.jpg";
+  img.onload = function() {
+    ctx.drawImage(img,0,0, c.width, c.height);
+    ctx.fillText("Score: ",5,15);
+    ctx.fillText("Lives:",5,35);
+    ctx.fillText("Level:",5,55);
+    ctx.fillText(game.score,100,15);
+    ctx.fillText(game.lives,100,35);
+    ctx.fillText(game.level,100,55);
+  };
+  img2.src = "characterShip.png";
+  img2.onload = function() {
+    ctx.drawImage(img2,character.x,460, 20, 30);
+  };
+  img3.src = "characterAsteroid.png";
+  img3.onload = function() {
+    ctx.drawImage(img3,harm.x,harm.y, 20, 30);
+  };
+  img4.src = "characterBarrel.jpg";
+  img4.onload = function() {
+    ctx.drawImage(img4,benefit.x,benefit.y, 20, 30);
+  };
+  harm.y += harm.speed;
+  benefit.y += benefit.speed;
+  if (harm.y > 500){
+      harm.y = -30;
+      harm.x = Math.floor((Math.random() * 480)); 
+  }
+  if (benefit.y > 500){
+      benefit.y = -30;
+      benefit.x = Math.floor((Math.random() * 480)); 
+  }
+  if(harm.y+30 > 460 && harm.y < 490){
+     if(harm.x >= character.x && harm.x <= character.x+20){
+       collisionHarm();
+     }
+     else if(harm.x+20 >= character.x && harm.x+20 <= character.x+20){
+       collisionHarm();
+     }
+  }
+  if(benefit.y+30 > 460 && benefit.y < 490){
+     if(benefit.x >= character.x && benefit.x <= character.x+20){
+       collisionBenefit();
+     }
+     else if(benefit.x+20 >= character.x && benefit.x+20 <= character.x+20){
+       collisionBenefit();
+     }
+  }
+    
+  window.requestAnimationFrame(draw)
+}
+
+  draw()
+</script> 
+
+</body>
+</html>
